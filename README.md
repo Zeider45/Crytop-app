@@ -1,4 +1,4 @@
-# CriptoApp (OpenSSL + Python)
+# CryptoApp (OpenSSL + Python)
 
 Micro proyecto práctico: Interfaz en Python para Gestión de Criptografía y Firmas Digitales usando **OpenSSL** vía `subprocess`.
 
@@ -14,14 +14,14 @@ Micro proyecto práctico: Interfaz en Python para Gestión de Criptografía y Fi
 Desde la raíz del proyecto:
 
 ```bash
-python3 -m criptoapp
+python3 -m CryptoApp
 ```
 
 ## Estructura
 
-- `criptoapp/openssl_wrapper.py`: wrapper seguro para invocar OpenSSL.
-- `criptoapp/operations.py`: funciones por módulo (RSA, hash, certificado, firma, verificación).
-- `criptoapp/menu.py`: menú interactivo.
+- `CryptoApp/openssl_wrapper.py`: wrapper seguro para invocar OpenSSL.
+- `CryptoApp/operations.py`: funciones por módulo (RSA, hash, certificado, firma, verificación).
+- `CryptoApp/menu.py`: menú interactivo.
 - `docs/EXPLICACION_PASO_A_PASO.md`: explicación detallada para el informe.
 - `examples/`: archivos de texto de ejemplo.
 - `output/`: salidas generadas (cifrados, hashes, firmas, certificados).

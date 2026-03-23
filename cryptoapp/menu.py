@@ -10,6 +10,7 @@ from .operations import (
     compute_hash,
     demonstrate_tampering,
     generate_self_signed_certificate,
+    generate_rsa_keypair,
     rsa_decrypt,
     rsa_encrypt,
     sign_document,
@@ -62,32 +63,35 @@ def _read_text_to_tempfile(text: str) -> Path:
 def menu_loop() -> None:
     while True:
         print(
-            "\n=== CriptoApp (OpenSSL + Python) ===\n"
-            "1) Cifrar mensaje con RSA\n"
-            "2) Descifrar mensaje con RSA\n"
-            "3) Generar hash (MD5 o SHA256)\n"
-            "4) Generar certificado digital X.509 autofirmado\n"
-            "5) Firmar digitalmente un documento\n"
-            "6) Verificar firma digital\n"
-            "7) Demostración de alteración (opcional)\n"
+            "\n============== CryptoApp ===============\n"
+            "1) Generar claves RSA (privada + pública)\n"
+            "2) Cifrar mensaje con RSA\n"
+            "3) Descifrar mensaje con RSA\n"
+            "4) Generar hash (MD5 o SHA256)\n"
+            "5) Generar certificado digital X.509 autofirmado\n"
+            "6) Firmar digitalmente un documento\n"
+            "7) Verificar firma digital\n"
+            "8) Demostración de alteración \n"
             "0) Salir\n"
         )
         option = input("Selecciona una opción: ").strip()
 
         try:
             if option == "1":
-                option_rsa_encrypt()
+                option_generate_rsa_keypair()
             elif option == "2":
-                option_rsa_decrypt()
+                option_rsa_encrypt()
             elif option == "3":
-                option_hash()
+                option_rsa_decrypt()
             elif option == "4":
-                option_certificate()
+                option_hash()
             elif option == "5":
-                option_sign()
+                option_certificate()
             elif option == "6":
-                option_verify()
+                option_sign()
             elif option == "7":
+                option_verify()
+            elif option == "8":
                 option_tamper_demo()
             elif option == "0":
                 print("Saliendo...")
@@ -118,6 +122,9 @@ def option_rsa_encrypt() -> None:
     _require_existing_file(public_key, "clave pública")
 
     out_bin = _output_path(f"mensaje_cifrado_{_now_tag()}.bin")
+
+    if out_bin.suffix.lower() != ".bin":
+        raise ValueError("La salida cifrada debe terminar en .bin, el archivo de salida actual es: {out_bin}")
 
     rsa_encrypt(message_txt=message_txt, public_key_pem=public_key, out_bin=out_bin)
     print(f"OK. Archivo cifrado generado en: {out_bin}")
@@ -173,12 +180,12 @@ def option_certificate() -> None:
 
     basename = input("Nombre base para archivos (ej: ucv_carlos): ").strip() or f"cert_{_now_tag()}"
 
-    country = input("C (País, 2 letras; ej: VE): ").strip() or "VE"
-    state = input("ST (Estado/Provincia): ").strip() or "Distrito Capital"
-    locality = input("L (Localidad/Ciudad): ").strip() or "Caracas"
+    country = input("P (País, 2 letras; ej: VE): ").strip() or "VE"
+    state = input("E (Estado): ").strip() or "Distrito Capital"
+    locality = input("C (Ciudad): ").strip() or "Caracas"
     organization = input("O (Organización): ").strip() or "UCV"
-    common_name = input("CN (Nombre común): ").strip() or "Estudiante"
-    san = input("DNS para SubjectAltName (ej: ejemplo.com): ").strip() or "ejemplo.com"
+    common_name = input("N (Nombre): ").strip() or "Estudiante"
+    san = input("DNS (ej: ejemplo.com): ").strip() or "ejemplo.com"
 
     days_valid_raw = input("Días de validez (Enter=365): ").strip()
     days_valid = int(days_valid_raw) if days_valid_raw else 365
@@ -277,6 +284,28 @@ def option_tamper_demo() -> None:
     print("(Se espera que falle) Resultado:")
     print("OK" if ok else "FALLÓ")
     print(msg)
+
+
+def option_generate_rsa_keypair() -> None:
+    print("\n--- RSA: Generar par de claves ---")
+    private_key_path = _output_path(f"rsa_private_{_now_tag()}.pem")
+    public_key_path = _output_path(f"rsa_public_{_now_tag()}.pem")
+
+    bits_raw = input("Bits RSA (Enter=2048): ").strip()
+    rsa_bits = int(bits_raw) if bits_raw else 2048
+
+    passphrase = _ask_passphrase(optional=True)
+
+    private_key, public_key = generate_rsa_keypair(
+        private_key_pem=private_key_path,
+        public_key_pem=public_key_path,
+        rsa_bits=rsa_bits,
+        passphrase=passphrase,
+    )
+
+    print("OK. Par de claves generado:")
+    print(f"- Clave privada: {private_key}")
+    print(f"- Clave pública: {public_key}")
 
 
 def main() -> None:

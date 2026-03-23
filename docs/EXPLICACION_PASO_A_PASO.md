@@ -1,4 +1,4 @@
-# Explicación paso a paso — CriptoApp (Python + OpenSSL)
+# Explicación paso a paso — CryptoApp (Python + OpenSSL)
 
 Este documento explica **cómo está programada** la aplicación y cómo cada opción del menú ejecuta comandos **reales** de OpenSSL usando `subprocess` (sin librerías criptográficas externas).
 
@@ -13,7 +13,7 @@ La app es una interfaz por consola que guía al usuario con un menú. Cada opera
 
 ## 2) Estructura del proyecto
 
-- `criptoapp/openssl_wrapper.py`
+- `CryptoApp/openssl_wrapper.py`
   - Capa “wrapper” que centraliza **cómo se llama OpenSSL**.
   - Define:
     - `run_openssl(args, ...)`: ejecuta el comando y captura stdout/stderr.
@@ -21,11 +21,11 @@ La app es una interfaz por consola que guía al usuario con un menú. Cada opera
     - `ensure_openssl_available()`: prueba `openssl version`.
     - `env_with_passphrase()`: pasa contraseñas por **variable de entorno** (más seguro que línea de comandos).
 
-- `criptoapp/operations.py`
+- `CryptoApp/operations.py`
   - Implementa las operaciones del proyecto como funciones.
   - Cada función corresponde a 1 módulo del enunciado.
 
-- `criptoapp/menu.py`
+- `CryptoApp/menu.py`
   - Presenta el menú interactivo.
   - Pide datos con `input()` / `getpass()`.
   - Llama a las funciones en `operations.py`.
@@ -241,7 +241,7 @@ Para cubrir la rúbrica, toma capturas de:
 Desde la raíz del proyecto:
 
 ```bash
-python3 -m criptoapp
+python3 -m CryptoApp
 ```
 
 Si estás en Windows:

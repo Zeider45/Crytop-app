@@ -28,6 +28,13 @@ class CertArtifacts:
 def rsa_encrypt(*, message_txt: Path, public_key_pem: Path, out_bin: Path) -> Path:
     require_file(message_txt, "archivo de mensaje")
     require_file(public_key_pem, "clave pública (.pem)")
+
+    if out_bin.resolve() == message_txt.resolve():
+        raise ValueError("El archivo de salida no puede ser el mismo que el archivo de entrada")
+
+    if out_bin.suffix.lower() != ".bin":
+        raise ValueError("La salida cifrada debe tener extensión .bin")
+
     require_parent_dir(out_bin)
 
     run_openssl(
@@ -66,6 +73,60 @@ def rsa_decrypt(
         "-inkey",
         str(private_key_pem),
     ]
+
+    if passphrase:
+        args += ["-passin", "env:OPENSSL_PASS"]
+
+    args += ["-in", str(cipher_bin), "-out", str(out_txt)]
+
+    run_openssl(args, env=extra_env)
+    return out_txt
+
+
+def generate_rsa_keypair(
+    *,
+    private_key_pem: Path,
+    public_key_pem: Path,
+    rsa_bits: int = 2048,
+    passphrase: str | None = None,
+) -> tuple[Path, Path]:
+    """Genera un par RSA (privada + pública) con OpenSSL."""
+    require_parent_dir(private_key_pem)
+    require_parent_dir(public_key_pem)
+
+    extra_env = env_with_passphrase(passphrase) if passphrase else None
+
+    keygen_cmd = [
+        "openssl",
+        "genpkey",
+        "-algorithm",
+        "RSA",
+        "-pkeyopt",
+        f"rsa_keygen_bits:{rsa_bits}",
+        "-out",
+        str(private_key_pem),
+    ]
+
+    if passphrase:
+        keygen_cmd += ["-aes-256-cbc", "-pass", "env:OPENSSL_PASS"]
+
+    run_openssl(keygen_cmd, env=extra_env)
+
+    pubout_cmd = [
+        "openssl",
+        "pkey",
+        "-in",
+        str(private_key_pem),
+        "-pubout",
+        "-out",
+        str(public_key_pem),
+    ]
+    if passphrase:
+        pubout_cmd += ["-passin", "env:OPENSSL_PASS"]
+
+    run_openssl(pubout_cmd, env=extra_env)
+
+    return private_key_pem, public_key_pem
     if passphrase:
         args += ["-passin", "env:OPENSSL_PASS"]
     args += ["-in", str(cipher_bin), "-out", str(out_txt)]
