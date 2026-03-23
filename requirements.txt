@@ -1,0 +1,3 @@
+# Este proyecto usa solo la librería estándar de Python.
+# (Opcional) Si quieres pruebas:
+# pytest
