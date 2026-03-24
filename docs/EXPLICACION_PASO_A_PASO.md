@@ -13,7 +13,7 @@ La app es una interfaz por consola que guía al usuario con un menú. Cada opera
 
 ## 2) Estructura del proyecto
 
-- `CryptoApp/openssl_wrapper.py`
+- `cryptoapp/openssl_wrapper.py`
   - Capa “wrapper” que centraliza **cómo se llama OpenSSL**.
   - Define:
     - `run_openssl(args, ...)`: ejecuta el comando y captura stdout/stderr.
@@ -21,14 +21,26 @@ La app es una interfaz por consola que guía al usuario con un menú. Cada opera
     - `ensure_openssl_available()`: prueba `openssl version`.
     - `env_with_passphrase()`: pasa contraseñas por **variable de entorno** (más seguro que línea de comandos).
 
-- `CryptoApp/operations.py`
-  - Implementa las operaciones del proyecto como funciones.
-  - Cada función corresponde a 1 módulo del enunciado.
+- `cryptoapp/operations.py`
+  - “Fachada” para mantener imports simples: re-exporta funciones desde módulos más pequeños.
+  - Esto permite que el menú haga `from .operations import ...` sin preocuparse por detalles internos.
 
-- `CryptoApp/menu.py`
+- `cryptoapp/rsa.py`
+  - RSA: generación de claves, cifrado y descifrado.
+
+- `cryptoapp/hashing.py`
+  - Hashes: MD5 / SHA-256 con `openssl dgst`.
+
+- `cryptoapp/certificates.py`
+  - Certificados: generación de clave privada cifrada, CSR y certificado autofirmado.
+
+- `cryptoapp/signing.py`
+  - Firma digital (hash SHA-256 + RSA), verificación y demostración de alteración.
+
+- `cryptoapp/menu.py`
   - Presenta el menú interactivo.
   - Pide datos con `input()` / `getpass()`.
-  - Llama a las funciones en `operations.py`.
+  - Llama a las funciones re-exportadas desde `operations.py`.
 
 - `examples/`
   - Textos de prueba (`mensaje.txt`, `documento.txt`) para capturas.
@@ -241,7 +253,7 @@ Para cubrir la rúbrica, toma capturas de:
 Desde la raíz del proyecto:
 
 ```bash
-python3 -m CryptoApp
+python -m cryptoapp
 ```
 
 Si estás en Windows:

@@ -14,14 +14,18 @@ Micro proyecto práctico: Interfaz en Python para Gestión de Criptografía y Fi
 Desde la raíz del proyecto:
 
 ```bash
-python3 -m CryptoApp
+python -m cryptoapp
 ```
 
 ## Estructura
 
-- `CryptoApp/openssl_wrapper.py`: wrapper seguro para invocar OpenSSL.
-- `CryptoApp/operations.py`: funciones por módulo (RSA, hash, certificado, firma, verificación).
-- `CryptoApp/menu.py`: menú interactivo.
+- `cryptoapp/openssl_wrapper.py`: wrapper seguro para invocar OpenSSL.
+- `cryptoapp/operations.py`: fachada (re-export) para no romper imports existentes.
+- `cryptoapp/rsa.py`: RSA (claves/cifrado/descifrado).
+- `cryptoapp/hashing.py`: hashes (MD5/SHA256).
+- `cryptoapp/certificates.py`: certificado X.509 autofirmado.
+- `cryptoapp/signing.py`: firma/verificación + demostración de alteración.
+- `cryptoapp/menu.py`: menú interactivo.
 - `docs/EXPLICACION_PASO_A_PASO.md`: explicación detallada para el informe.
 - `examples/`: archivos de texto de ejemplo.
 - `output/`: salidas generadas (cifrados, hashes, firmas, certificados).
